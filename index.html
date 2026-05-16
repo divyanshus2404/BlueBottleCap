@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>BlueBottleCap</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Smart AI-style tools for students">
+
+  <!-- Premium Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css"/>
+</head>
+
+<body class="app">
+
+<!-- ========================= -->
+<!-- NAVBAR -->
+<!-- ========================= -->
+<header class="navbar">
+  <div class="logo-container">
+    <img src="logo.png" class="logo"/>
+    <h1>BlueBottleCap</h1>
+  </div>
+</header>
+
+<!-- ========================= -->
+<!-- HERO -->
+<!-- ========================= -->
+<section class="hero">
+  <div class="hero-content">
+    <h2>Think Clearly. Study Smarter.</h2>
+    <p>Turn messy notes into structured, exam-ready insights.</p>
+    <button onclick="openTool('notes')">Start Writing</button>
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- TOOLS -->
+<!-- ========================= -->
+<section class="tools">
+
+  <div class="tool-grid">
+
+    <div class="tool-card" onclick="openTool('notes')">
+      <h3>🧠 Notes Generator</h3>
+      <p>Smart summaries with structure & clarity</p>
+    </div>
+
+    <div class="tool-card" onclick="openTool('todo')">
+      <h3>📅 Planner</h3>
+      <p>Track tasks & stay consistent</p>
+    </div>
+
+    <div class="tool-card" onclick="openTool('calc')">
+      <h3>🧮 Calculator</h3>
+      <p>Quick and clean calculations</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- MODAL -->
+<!-- ========================= -->
+<div id="toolModal" class="modal">
+  <div class="modal-content">
+
+    <span class="close" onclick="closeTool()">✕</span>
+
+    <!-- ===== NOTES TOOL ===== -->
+    <div id="notesTool" class="tool">
+
+      <h3>🧠 AI Notes Generator</h3>
+
+      <textarea id="notesInput" placeholder="Paste your notes here..."></textarea>
+
+      <button onclick="summarize()">Generate Notes</button>
+
+      <div class="action-buttons">
+        <button onclick="copyText()">Copy</button>
+        <button onclick="downloadPDF()">Download PDF</button>
+      </div>
+
+      <div id="notesOutput"></div>
+
+    </div>
+
+    <!-- ===== TODO TOOL ===== -->
+    <div id="todoTool" class="tool" style="display:none;">
+      <h3>📅 Planner</h3>
+
+      <input id="taskInput" placeholder="Enter task"/>
+      <button onclick="addTask()">Add Task</button>
+
+      <ul id="taskList"></ul>
+    </div>
+
+    <!-- ===== CALCULATOR ===== -->
+    <div id="calcTool" class="tool" style="display:none;">
+      <h3>🧮 Calculator</h3>
+
+      <input id="calcInput" placeholder="e.g. 5+10*2"/>
+      <button onclick="calculate()">Calculate</button>
+
+      <div id="calcOutput"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- FOOTER -->
+<!-- ========================= -->
+<footer>
+  <p>© 2026 BlueBottleCap</p>
+</footer>
+
+<!-- ========================= -->
+<!-- REQUIRED LIBS -->
+<!-- ========================= -->
+
+<!-- HTML → Canvas (for PDF + emojis) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- PDF Generator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Main JS -->
+<script src="script.js"></script>
+
+</body>
+</html>
