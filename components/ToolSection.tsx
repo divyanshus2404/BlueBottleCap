@@ -16,6 +16,7 @@ type ToolSectionProps = {
   onAction: (type: ActionId) => void;
   onCopy: () => void;
   onClear: () => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   remaining: number;
   limit: number;
 };
@@ -39,6 +40,7 @@ export function ToolSection({
   onAction,
   onCopy,
   onClear,
+  onKeyDown,
   remaining,
   limit,
 }: ToolSectionProps) {
@@ -74,6 +76,7 @@ export function ToolSection({
           <textarea
             value={input}
             onChange={(event) => onInput(event.target.value)}
+            onKeyDown={onKeyDown}
             rows={6}
             placeholder="Paste your paragraph or notes here…"
             className="mt-3 w-full rounded-[28px] border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-900 outline-none transition duration-300 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
@@ -87,11 +90,12 @@ export function ToolSection({
               type="button"
               onClick={() => onAction(action.id)}
               disabled={loading}
-              whileHover={!loading ? { y: -2, scale: 1.01 } : undefined}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
+              whileHover={!loading ? { y: -3, scale: 1.02 } : undefined}
+              whileTap={{ scale: 0.985 }}
+              transition={{ duration: 0.12, ease: 'easeOut' }}
               className={`rounded-full px-5 py-3 text-sm font-semibold transition duration-300 ${
                 activeAction === action.id
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/15'
+                  ? 'btn-gradient text-white shadow-lg shadow-blue-500/15'
                   : 'border border-blue-100 bg-white text-blue-700 hover:border-blue-200 hover:bg-blue-50'
               } ${loading ? 'cursor-not-allowed opacity-70' : ''}`}
             >
@@ -102,11 +106,13 @@ export function ToolSection({
 
         <div className="relative rounded-[28px] border border-slate-200 bg-slate-50 p-6 text-sm leading-7 text-slate-900 shadow-inner">
           <div className="absolute inset-x-6 top-6 h-px bg-slate-200/80" />
-          <div className="min-h-[220px] pt-3">
+          <div className="min-h-[220px] pt-3" role="status" aria-live="polite">
             {loading ? (
-              <div className="flex items-center gap-3 text-slate-600">
-                <span className="inline-flex h-3.5 w-3.5 animate-pulse rounded-full bg-blue-600" />
-                Improving your text…
+              <div className="space-y-3">
+                <div className="h-4 w-3/4 rounded-md skeleton" />
+                <div className="h-4 w-5/6 rounded-md skeleton" />
+                <div className="h-4 w-2/3 rounded-md skeleton" />
+                <div className="h-4 w-4/5 rounded-md skeleton" />
               </div>
             ) : displayedOutput ? (
               <p className="whitespace-pre-wrap break-words">{displayedOutput}</p>
@@ -118,14 +124,27 @@ export function ToolSection({
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            type="button"
-            onClick={onCopy}
-            disabled={!output || loading}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-blue-700 ring-1 ring-blue-100 transition duration-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {copied ? 'Copied' : 'Copy output'}
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={onCopy}
+              disabled={!output || loading}
+              className="inline-flex h-12 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-blue-700 ring-1 ring-blue-100 transition duration-300 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Copy
+            </button>
+            {copied && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: -12 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.28 }}
+                className="pointer-events-none absolute -right-2 -top-8 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow-md"
+              >
+                Copied
+              </motion.div>
+            )}
+          </div>
           <button
             type="button"
             onClick={onClear}

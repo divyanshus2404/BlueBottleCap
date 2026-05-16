@@ -8,10 +8,11 @@ A minimal, production-ready Next.js app for instant AI text rewriting, explanati
    ```bash
    npm install
    ```
-2. Add your OpenAI API key:
+2. Copy the example env file and add your OpenAI API key:
    ```bash
-   echo "OPENAI_API_KEY=your_api_key_here" > .env.local
+   cp .env.local.example .env.local
    ```
+   Then open `.env.local` and add your key.
 3. Run locally:
    ```bash
    npm run dev
@@ -28,9 +29,20 @@ A minimal, production-ready Next.js app for instant AI text rewriting, explanati
 
 ## API Routes
 
-- `POST /api/rewrite`
-- `POST /api/explain`
-- `POST /api/formalize`
-- `POST /api/expand`
+- `POST /api/process`
 
-Each route accepts `{ text: string }` and returns `{ result: string }`.
+Request body:
+```json
+{
+   "text": "Your text here",
+   "type": "rewrite" | "explain" | "formalize" | "expand"
+}
+```
+
+Response:
+> If no OpenAI API key is configured, the app will use a local fallback response for UI testing.
+```json
+{
+   "result": "Improved output"
+}
+```

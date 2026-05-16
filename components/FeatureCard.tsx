@@ -15,8 +15,9 @@ export function FeatureCard({ icon, title, description, index }: FeatureCardProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay: index * 0.12, ease: 'easeOut' }}
-      whileHover={{ y: -6, scale: 1.03, boxShadow: '0 32px 80px rgba(15, 23, 42, 0.12)' }}
-      className="rounded-[28px] border border-white/80 bg-white/80 p-6 shadow-soft backdrop-blur-xl transition"
+      whileHover={{ y: -8, scale: 1.04, rotate: -1, boxShadow: '0 38px 100px rgba(15, 23, 42, 0.14)' }}
+      whileTap={{ scale: 0.995, y: -2 }}
+      className="rounded-[28px] border border-white/80 bg-white/80 p-6 shadow-soft backdrop-blur-xl transition transform-gpu will-change-transform"
     >
       <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-blue-50 text-blue-600 shadow-md shadow-blue-100/80">
         <span className="text-2xl">{icon}</span>

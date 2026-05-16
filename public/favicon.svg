@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#7C3AED" />
+    </linearGradient>
+    <filter id="f" x="0" y="0" width="200%" height="200%">
+      <feOffset dx="0" dy="4" result="offOut" />
+      <feGaussianBlur in="offOut" stdDeviation="5" result="blurOut" />
+      <feColorMatrix in="blurOut" type="matrix" values="0 0 0 0 0 0 0 0 0 0.15 0 0 0 0 0.5 0 0 0 0.2 0" />
+      <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+    </filter>
+  </defs>
+  <rect x="8" y="8" width="48" height="48" rx="18" fill="url(#g)" filter="url(#f)" />
+  <path d="M27 23H35C38.3137 23 41 25.6863 41 29C41 30.3789 40.5269 31.6657 39.7117 32.6582C40.7215 33.6676 41.3462 35.0616 41.3462 36.5835C41.3462 40.1087 38.4551 43 34.9299 43H27V23ZM30 26V40H34.9299C37.1605 40 39 38.1605 39 35.9299C39 33.6993 37.1605 31.8598 34.9299 31.8598H30V26ZM21 23H24V43H21V23Z" fill="white" />
+</svg>

@@ -6,6 +6,8 @@ import { useClipboard } from '../hooks/useClipboard';
 import { useDailyQuota } from '../hooks/useDailyQuota';
 import { FeatureCard } from '../components/FeatureCard';
 import { ToolSection } from '../components/ToolSection';
+import { AnimatedLogo } from '../components/AnimatedLogo';
+import { LottieHero } from '../components/LottieHero';
 
 const features = [
   {
@@ -38,6 +40,7 @@ export default function HomePage() {
   const [activeAction, setActiveAction] = useState<ActionId>('rewrite');
   const [scrolled, setScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const { copied, copy } = useClipboard();
   const { remaining, limited, resetLabel, increment, limit } = useDailyQuota();
 
@@ -49,6 +52,17 @@ export default function HomePage() {
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      const x = (event.clientX / window.innerWidth - 0.5) * 26;
+      const y = (event.clientY / window.innerHeight - 0.5) * 26;
+      setPointer({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   useEffect(() => {
@@ -89,6 +103,45 @@ export default function HomePage() {
     setDisplayedOutput('');
 
     try {
+      // Try streaming endpoint first
+      const streamResp = await fetch('/api/stream-process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: input, type }),
+      });
+
+      if (!streamResp.ok) {
+        const error = await streamResp.json();
+        throw new Error(error?.error || 'Server error');
+      }
+
+      // If the response is a stream (SSE), consume it progressively
+      if (streamResp.body) {
+        const reader = streamResp.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let full = '';
+
+        while (!done) {
+          const { value, done: rDone } = await reader.read();
+          done = !!rDone;
+          if (value) {
+            const chunk = decoder.decode(value);
+            // SSE sends `data: ...\n\n` blocks; strip 'data:' and append
+            const cleaned = chunk.replace(/data:\s?/g, '').replace(/\n\n/g, '');
+            full += cleaned;
+            setDisplayedOutput((prev) => prev + cleaned);
+          }
+        }
+
+        setOutput(full.trim());
+        setStatus('success');
+        setMessage('Ready. Copy or refine another text.');
+        increment();
+        return;
+      }
+
+      // Fallback to non-streaming endpoint
       const response = await fetch('/api/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -116,7 +169,7 @@ export default function HomePage() {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
-      handleAction('rewrite');
+      handleAction(activeAction);
     }
   };
 
@@ -124,12 +177,20 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-slate-100 text-slate-950">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <motion.div
-          style={{ transform: `translate3d(0, ${scrollY * 0.06}px, 0)` }}
-          className="absolute left-1/2 top-10 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-gradient-to-br from-sky-400 via-cyan-300 to-violet-500 opacity-50 blur-3xl animate-blob"
+          style={{ transform: `translate3d(${pointer.x * 0.02}px, ${scrollY * 0.06}px, 0)` }}
+          className="absolute left-1/2 top-10 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-gradient-to-br from-sky-400 via-cyan-300 to-violet-500 opacity-60 blur-3xl animate-blob"
         />
         <motion.div
-          style={{ transform: `translate3d(0, ${scrollY * -0.03}px, 0)` }}
+          style={{ transform: `translate3d(${pointer.x * -0.03}px, ${scrollY * -0.03}px, 0)` }}
           className="absolute right-0 top-1/3 h-[260px] w-[260px] rounded-full bg-indigo-400/40 blur-3xl opacity-50 animate-blob animation-delay-2000"
+        />
+        <motion.div
+          style={{ transform: `translate3d(${pointer.x * 0.18}px, ${pointer.y * 0.18}px, 0)` }}
+          className="absolute left-14 top-1/2 h-24 w-24 rounded-full bg-emerald-300/15 blur-3xl opacity-80"
+        />
+        <motion.div
+          style={{ transform: `translate3d(${pointer.x * -0.14}px, ${pointer.y * -0.12}px, 0)` }}
+          className="absolute right-16 top-4 h-20 w-20 rounded-full bg-fuchsia-400/15 blur-3xl opacity-90"
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.12),transparent_30%)]" />
       </div>
@@ -138,7 +199,7 @@ export default function HomePage() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-blue-600 text-white shadow-lg shadow-blue-500/20">
-              B
+              <AnimatedLogo size={36} />
             </div>
             <div>
               <p className="text-sm font-semibold tracking-[0.3em] uppercase text-blue-600">BluebottleCap</p>
@@ -168,11 +229,16 @@ export default function HomePage() {
                 Premium writing, instantly
               </p>
               <h1 className="mt-8 max-w-3xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-                One screen for confident, student-ready writing.
+                A premium writing studio made for instant clarity.
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-                Paste your text, choose a style, and get refined output without distractions. Clean motion, calm feedback, and a premium one-screen workflow.
+                Paste text, select a tone, and polish everything in a single refined flow. Minimal distractions, thoughtful motion, and output designed to feel effortless.
               </p>
+              <div className="mt-5 flex flex-wrap gap-3 text-xs uppercase tracking-[0.35em] text-slate-500">
+                <span className="rounded-full bg-slate-100 px-3 py-2">Focused workflow</span>
+                <span className="rounded-full bg-slate-100 px-3 py-2">Premium motion</span>
+                <span className="rounded-full bg-slate-100 px-3 py-2">Student-ready tone</span>
+              </div>
               <div className="mt-8 flex flex-wrap gap-4">
                 <button
                   type="button"
@@ -188,25 +254,45 @@ export default function HomePage() {
             </div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-              className="rounded-[28px] border border-slate-200 bg-slate-50/90 p-6 shadow-soft"
+              transition={{ duration: 0.75, delay: 0.15, ease: 'easeOut' }}
+              className="relative rounded-[28px] border border-slate-200 bg-slate-950/95 p-6 shadow-soft glass overflow-hidden"
             >
-              <p className="text-sm font-semibold uppercase tracking-[0.32em] text-slate-500">How it works</p>
-              <div className="mt-6 space-y-4">
-                <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-950">Paste your text</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">Insert anything from notes, essays, or messages.</p>
+              <div className="pointer-events-none absolute -top-6 right-4 h-32 w-32 rounded-full bg-blue-400/20 blur-3xl" />
+              <div className="pointer-events-none absolute left-4 top-20 h-24 w-24 rounded-full bg-violet-500/15 blur-3xl" />
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-sky-300">Live preview</p>
+                  <h3 className="mt-4 text-3xl font-semibold text-white">Polish before you paste.</h3>
                 </div>
-                <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-950">Choose an action</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">Rewrite, explain, formalize or expand with one tap.</p>
+                <div className="rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs uppercase tracking-[0.3em] text-white/80">
+                  +35% clarity
                 </div>
-                <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-950">Copy or refine</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">Get fast output and continue editing without friction.</p>
+              </div>
+
+              <div className="mt-6 flex items-center justify-center">
+                <LottieHero />
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <div className="rounded-[24px] border border-slate-800/90 bg-slate-900/95 p-5 shadow-xl">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Original</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    I need this paragraph to sound more professional while keeping the original meaning.
+                  </p>
                 </div>
+                <div className="rounded-[24px] border border-blue-500/20 bg-blue-500/10 p-5 shadow-xl">
+                  <p className="text-xs uppercase tracking-[0.35em] text-blue-200">Refined</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-50">
+                    Transform this paragraph into polished, professional language that still reflects the same message.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center gap-3 text-sm text-slate-300">
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_0_8px_rgba(16,185,129,0.08)]" />
+                <span>Instant clarity with premium motion and thoughtful output.</span>
               </div>
             </motion.div>
           </div>
@@ -218,6 +304,48 @@ export default function HomePage() {
           ))}
         </section>
 
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: 'easeOut' }}
+          className="rounded-[32px] border border-white/80 bg-white/90 p-8 shadow-soft backdrop-blur-xl"
+        >
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-blue-600">Crafted for focus</p>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+                A calm, premium interface designed for effortless writing.
+              </h2>
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+                The experience blends airy spacing, refined motion, and clean feedback so every interaction feels intuitive and intentional.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Speed</p>
+                <p className="mt-4 text-lg font-semibold text-slate-950">Instant output</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Get polished writing in a single tap with live progress feedback.</p>
+              </div>
+              <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Clarity</p>
+                <p className="mt-4 text-lg font-semibold text-slate-950">Studio-grade tone</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">From formal essays to casual notes, every style feels polished and consistent.</p>
+              </div>
+              <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Focus</p>
+                <p className="mt-4 text-lg font-semibold text-slate-950">One screen workflow</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">No clutter, no tabs. Write, refine, and copy without losing momentum.</p>
+              </div>
+              <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Polish</p>
+                <p className="mt-4 text-lg font-semibold text-slate-950">Responsive motion</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Subtle animation and tactile UI cues keep the interface feeling alive.</p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
         <ToolSection
           input={input}
           onInput={setInput}
@@ -228,6 +356,7 @@ export default function HomePage() {
           loading={status === 'loading'}
           copied={copied}
           onAction={handleAction}
+          onKeyDown={handleKeyDown}
           onCopy={() => copy(output)}
           onClear={() => {
             setInput('');
@@ -244,6 +373,20 @@ export default function HomePage() {
           <p className="font-semibold text-slate-950">Fast, premium feel</p>
           <p className="mt-2 text-slate-600">Smooth motion, subtle depth, and a calm experience built for daily student writing.</p>
         </div>
+
+        <footer className="rounded-[32px] border border-white/80 bg-white/90 p-8 text-sm text-slate-600 shadow-soft backdrop-blur-xl">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-950">BluebottleCap</p>
+              <p className="mt-2 max-w-xl text-sm leading-7 text-slate-600">A polished writing studio made for students, creators, and anyone who wants better writing in one clean workflow.</p>
+            </div>
+            <div className="flex flex-wrap gap-4 text-xs uppercase tracking-[0.3em] text-slate-500">
+              <span>Built for clarity</span>
+              <span>Fast workflow</span>
+              <span>Clean design</span>
+            </div>
+          </div>
+        </footer>
       </div>
     </main>
   );
