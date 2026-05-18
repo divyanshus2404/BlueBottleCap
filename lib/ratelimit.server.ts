@@ -10,8 +10,8 @@ export async function rateLimit(key: string, limit = 100, windowMs = 60_000): Pr
   if (redisUrl) {
     try {
       // Dynamically import to avoid hard dependency in environments without ioredis
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const Redis = require('ioredis');
+      const redisModule = await import('ioredis');
+      const Redis = (redisModule as any).default ?? redisModule;
       const client = new Redis(redisUrl);
       const keyName = `ratelimit:${key}`;
       const ttl = Math.ceil(windowMs / 1000);
