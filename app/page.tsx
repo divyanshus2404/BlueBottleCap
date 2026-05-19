@@ -377,42 +377,99 @@ export default function HomePage() {
         </div>
 
         {/* PRICING SECTION */}
-        <section id="pricing" className="py-20 px-6 max-w-5xl mx-auto w-full">
+        <section id="pricing" className="py-20 px-6 max-w-7xl mx-auto w-full">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Simple, transparent pricing</h2>
             <p className="mt-4 text-lg text-slate-600">Invest in your productivity without breaking the bank.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-slate-900">Basic</h3>
-              <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
-                ₹99
-                <span className="ml-1 text-xl font-medium text-slate-500">/mo</span>
-              </div>
-              <p className="mt-4 text-sm text-slate-500">Perfect for getting started.</p>
-              <button onClick={() => window.location.href='/checkout?plan=basic&annual=false'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Basic</button>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
             
-            <div className="bg-blue-600 rounded-3xl p-6 sm:p-8 shadow-xl shadow-blue-600/20 relative transform lg:-translate-y-4">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">Most Popular</div>
-              <h3 className="text-xl font-semibold text-white">Student Pro</h3>
-              <div className="mt-4 flex items-baseline text-4xl font-extrabold text-white">
-                ₹159
-                <span className="ml-1 text-xl font-medium text-blue-200">/mo</span>
+            {/* Free Tier */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900">Free</h3>
+                <p className="mt-2 text-sm text-slate-500 min-h-[40px]">Perfect for getting started</p>
+                <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
+                  ₹0
+                </div>
               </div>
-              <p className="mt-4 text-sm text-blue-100">Everything you need to excel.</p>
-              <button onClick={() => window.location.href='/checkout?plan=pro&annual=true'} className="mt-8 block w-full bg-white hover:bg-slate-50 text-blue-600 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Upgrade to Pro</button>
+              <ul className="mt-8 space-y-4 flex-1">
+                {['All basic PDF tools', 'All image tools', 'Quick text utilities', 'Limited AI usage (5/day)', 'Basic file size limits'].map((feature, i) => (
+                  <li key={i} className="flex items-start text-sm text-slate-600">
+                    <svg className="w-5 h-5 text-emerald-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <button onClick={() => window.location.href='/login'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Start Free</button>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
-              <h3 className="text-xl font-semibold text-slate-900">Elite</h3>
-              <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
-                ₹349
-                <span className="ml-1 text-xl font-medium text-slate-500">/mo</span>
+            {/* Basic Tier */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900">Basic</h3>
+                <p className="mt-2 text-sm text-slate-500 min-h-[40px]">For regular users</p>
+                <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
+                  ₹79
+                  <span className="ml-1 text-xl font-medium text-slate-500">/month</span>
+                </div>
+                <p className="mt-1 text-xs font-medium text-emerald-600">Billed annually</p>
               </div>
-              <p className="mt-4 text-sm text-slate-500">For absolute power users.</p>
-              <button onClick={() => window.location.href='/checkout?plan=elite&annual=false'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Elite</button>
+              <ul className="mt-8 space-y-4 flex-1">
+                {['Everything in Free', 'Increased AI usage (20/day)', 'Faster processing', 'No watermark on exports', 'Larger file size limits'].map((feature, i) => (
+                  <li key={i} className="flex items-start text-sm text-slate-600">
+                    <svg className="w-5 h-5 text-emerald-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <button onClick={() => window.location.href='/checkout?plan=basic&annual=true'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Basic</button>
+            </div>
+            
+            {/* Pro Tier */}
+            <div className="bg-blue-600 rounded-3xl p-6 sm:p-8 shadow-xl shadow-blue-600/20 relative transform lg:-translate-y-4 flex flex-col">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">Most Popular</div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Pro</h3>
+                <p className="mt-2 text-sm text-blue-100 min-h-[40px]">Most popular for students</p>
+                <div className="mt-4 flex items-baseline text-4xl font-extrabold text-white">
+                  ₹159
+                  <span className="ml-1 text-xl font-medium text-blue-200">/month</span>
+                </div>
+                <p className="mt-1 text-xs font-medium text-blue-200">Billed annually</p>
+              </div>
+              <ul className="mt-8 space-y-4 flex-1">
+                {['Everything in Basic', 'Unlimited AI tools', 'Assignment formatter', 'Flashcard generator', 'Study planner', 'Resume builder'].map((feature, i) => (
+                  <li key={i} className="flex items-start text-sm text-blue-50">
+                    <svg className="w-5 h-5 text-blue-300 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <button onClick={() => window.location.href='/checkout?plan=pro&annual=true'} className="mt-8 block w-full bg-white hover:bg-slate-50 text-blue-600 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Pro</button>
+            </div>
+
+            {/* Elite Tier */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900">Elite</h3>
+                <p className="mt-2 text-sm text-slate-500 min-h-[40px]">For power users</p>
+                <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
+                  ₹279
+                  <span className="ml-1 text-xl font-medium text-slate-500">/month</span>
+                </div>
+                <p className="mt-1 text-xs font-medium text-emerald-600">Billed annually</p>
+              </div>
+              <ul className="mt-8 space-y-4 flex-1">
+                {['Everything in Pro', 'Highest quality AI outputs', 'Bulk file processing', 'Unlimited file conversions', 'Advanced image tools'].map((feature, i) => (
+                  <li key={i} className="flex items-start text-sm text-slate-600">
+                    <svg className="w-5 h-5 text-emerald-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <button onClick={() => window.location.href='/checkout?plan=elite&annual=true'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Elite</button>
             </div>
           </div>
         </section>
