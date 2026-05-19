@@ -85,7 +85,7 @@ function CheckoutContent() {
                 plan: plan
               })
             });
-            window.location.href = '/dashboard?success=true';
+            window.location.href = '/?success=true';
           } catch (err) {
             alert('Failed to verify payment');
           }
