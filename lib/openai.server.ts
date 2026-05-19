@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'dummy_key_for_mock_mode' });
 
 export async function runOpenAI(prompt: string, model = 'gpt-3.5-turbo', maxTokens = 220) {
   const response = await client.chat.completions.create({

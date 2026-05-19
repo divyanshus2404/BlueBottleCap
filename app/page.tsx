@@ -8,6 +8,7 @@ import { FeatureCard } from '../components/FeatureCard';
 import { ToolSection } from '../components/ToolSection';
 import { AnimatedLogo } from '../components/AnimatedLogo';
 import { LottieHero } from '../components/LottieHero';
+import { BottleAnimation } from '../components/bottle-animation';
 
 const features = [
   {
@@ -216,6 +217,7 @@ export default function HomePage() {
         </nav>
       </header>
 
+      <BottleAnimation />
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
         <motion.section
           initial={{ opacity: 0, y: 32 }}
@@ -298,7 +300,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        <section id="features" className="grid gap-5 md:grid-cols-3">
+        <section id="features" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((feature, index) => (
             <FeatureCard key={feature.title} index={index} icon={feature.icon} title={feature.title} description={feature.description} />
           ))}
@@ -321,7 +323,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
               <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
                 <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Speed</p>
                 <p className="mt-4 text-lg font-semibold text-slate-950">Instant output</p>
@@ -373,6 +375,47 @@ export default function HomePage() {
           <p className="font-semibold text-slate-950">Fast, premium feel</p>
           <p className="mt-2 text-slate-600">Smooth motion, subtle depth, and a calm experience built for daily student writing.</p>
         </div>
+
+        {/* PRICING SECTION */}
+        <section id="pricing" className="py-20 px-6 max-w-5xl mx-auto w-full">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Simple, transparent pricing</h2>
+            <p className="mt-4 text-lg text-slate-600">Invest in your productivity without breaking the bank.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+              <h3 className="text-xl font-semibold text-slate-900">Basic</h3>
+              <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
+                ₹99
+                <span className="ml-1 text-xl font-medium text-slate-500">/mo</span>
+              </div>
+              <p className="mt-4 text-sm text-slate-500">Perfect for getting started.</p>
+              <button onClick={() => window.location.href='/checkout?plan=basic&annual=false'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Basic</button>
+            </div>
+            
+            <div className="bg-blue-600 rounded-3xl p-6 sm:p-8 shadow-xl shadow-blue-600/20 relative transform lg:-translate-y-4">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">Most Popular</div>
+              <h3 className="text-xl font-semibold text-white">Student Pro</h3>
+              <div className="mt-4 flex items-baseline text-4xl font-extrabold text-white">
+                ₹159
+                <span className="ml-1 text-xl font-medium text-blue-200">/mo</span>
+              </div>
+              <p className="mt-4 text-sm text-blue-100">Everything you need to excel.</p>
+              <button onClick={() => window.location.href='/checkout?plan=pro&annual=true'} className="mt-8 block w-full bg-white hover:bg-slate-50 text-blue-600 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Upgrade to Pro</button>
+            </div>
+
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
+              <h3 className="text-xl font-semibold text-slate-900">Elite</h3>
+              <div className="mt-4 flex items-baseline text-4xl font-extrabold text-slate-900">
+                ₹349
+                <span className="ml-1 text-xl font-medium text-slate-500">/mo</span>
+              </div>
+              <p className="mt-4 text-sm text-slate-500">For absolute power users.</p>
+              <button onClick={() => window.location.href='/checkout?plan=elite&annual=false'} className="mt-8 block w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold py-3 px-4 rounded-xl text-center transition-colors">Get Elite</button>
+            </div>
+          </div>
+        </section>
 
         <footer className="rounded-[32px] border border-white/80 bg-white/90 p-8 text-sm text-slate-600 shadow-soft backdrop-blur-xl">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
